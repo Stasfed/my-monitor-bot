@@ -3,7 +3,7 @@ name: Website Monitor
 on:
   workflow_dispatch:       # ручной запуск
   schedule:
-    - cron: "0 * * * *"    # каждый час
+    - cron: "*/30 * * * *"    # каждые полчаса
 
 permissions:
   contents: read
