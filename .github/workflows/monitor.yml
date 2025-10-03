@@ -1,16 +1,21 @@
-name: Monitor Website
+name: Website Monitor
 
 on:
+  workflow_dispatch:       # ручной запуск
   schedule:
-    - cron: "*/30 * * * *"   # каждые 30 минут
-  workflow_dispatch:         # запуск вручную из Actions
+    - cron: "0 * * * *"    # каждый час
+
+permissions:
+  contents: read
 
 jobs:
-  check:
+  monitor:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: main
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -20,16 +25,5 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run monitor
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          CHAT_ID: ${{ secrets.CHAT_ID }}
+      - name: Run monitor script
         run: python monitor.py
-
-      - name: Save state (hash)
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git add page_hash.txt || true
-          git commit -m "update hash" || echo "No changes"
-          git push
